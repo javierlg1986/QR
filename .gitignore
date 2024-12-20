@@ -1,0 +1,7 @@
+*.DS_Store
+*.sqlite
+env
+.venv
+*.jpg
+*.pdf
+*__pycache__
