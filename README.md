@@ -70,3 +70,4 @@ Se preparará la documentación de uso de la aplicación y explicación de los p
 Una vez realizada la actividad formativa, se acompañará al personal designado por el Concello a campo, para comprobar que la implementación sea la prevista.
 
 La documentación presentada en la jornada de divulgación quedará subida en la aplicación web.
+Fin
