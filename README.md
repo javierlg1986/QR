@@ -1,6 +1,8 @@
 # QR
 E007 WebApp QR
 
+Esto es para probar pa poner algo en el README
+
 2.1 Estudio de alternativas:
 
 Se estudiarán detalladamente los distintos flujos de trabajo. Al menos, se tendrán en cuenta las siguientes actividades:
