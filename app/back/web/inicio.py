@@ -11,14 +11,14 @@ from app.back.aux_.tools import sqliteRow2dict_dict
 @app.route('/')
 @permiso
 def index():
-    db = get_db()
-    cur = db.cursor()
-    cur.execute("""
-        SELECT *
-        FROM traballos
-        """)
-    traballos = cur.fetchall()
+    # db = get_db()
+    # cur = db.cursor()
+    # cur.execute("""
+    #     SELECT *
+    #     FROM traballos
+    #     """)
+    # traballos = cur.fetchall()
     return render_template(
         "html/web/inicio/index.html",
-        traballos=traballos
+        # traballos=traballos
     )

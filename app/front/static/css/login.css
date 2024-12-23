@@ -1,0 +1,28 @@
+@media (min-width: 968px) {
+    #boton_login {
+        width: 183px;
+    }
+}
+
+@media (max-width: 967px) {
+    #boton_login {
+        width: 190px;
+    }
+}
+
+#contenido {
+    display: flex;
+    justify-content: center;
+    margin-top: 50vh;
+}
+#contenedor {
+    margin: auto;
+}
+
+.menu_icon {
+    display: none;
+}
+
+#contenedor .fa-solid, #contenedor .fa-regular {
+    padding: 0 5px 0 0px;
+}

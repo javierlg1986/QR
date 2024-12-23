@@ -1,0 +1,14 @@
+.nota_traballo {
+    background: #e3cb22;
+    border: dotted 2px #d9c220;
+    color: white;
+    font-size: 90%;
+    border-radius: 6px;
+    width: fit-content;
+    margin: 2px 0 5px 0;
+    padding: 3px 7px 2px 7px;
+}
+
+.menu {
+    display: none;
+}
