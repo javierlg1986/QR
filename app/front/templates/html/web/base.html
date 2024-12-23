@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="robots" content="noindex">
+	{% include 'html/web/favicon.html' %}
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    	
+    {% block title %}{% endblock %}
+	<!-- <link rel="shortcut icon" type="image/x-icon" href="{{url_for('static', filename='/images/FAV.png')}}" />
+	<link rel="icon" href="{{url_for('static', filename='/images/FAV.png')}}" type="image/png"/> -->
+	<script src="{{url_for('static', filename='/js/jquery-3.7.1.min.js')}}"></script>
+	<link href="{{url_for('static', filename='/fonts/fontawesome.min.css')}}" rel="stylesheet" />
+	<link href="{{url_for('static', filename='/fonts/regular.min.css')}}" rel="stylesheet" />
+	<link href="{{url_for('static', filename='/fonts/solid.min.css')}}" rel="stylesheet" />
+
+	{% block scripts %}{% endblock %}
+	<script type="text/javascript" src="{{url_for('static', filename='/js/common.js')}}"></script>
+	<link rel="stylesheet" href="{{url_for('static', filename='/css/common.css')}}">
+	<script>var token{% if session.TOKEN %} = '{{session.TOKEN}}'{% endif %};</script>
+	{% block scripts2 %}{% endblock %}
+</head>
+<body>
+	<header class="">
+		<div class="" style="">
+			<div class="left">
+				<a href="/"><img id="logo" src="{{url_for('static', filename='img/logo.png')}}" alt="logo"></a>
+			</div>
+			<div class="nome_proxecto">
+				<a href="/" class="noDecorado">
+					<span id='nombre_app'>{{g.app}}</span>
+				</a>
+			</div>
+			
+			<aside class="compact menu right">
+				<span><i id="open_button" class="menu_icon fa-solid fa-bars" onclick="openMenu()"></i></span>
+				<br>
+				<ul id="menu_list" class="hidden">{% block menu %}{% endblock %}</ul>
+			</aside>
+		</div>
+	</header>
+	<main>
+		{% block content %}{% endblock %}
+		{% block datalists %}{% endblock %}
+	</main>
+	
+	<footer>
+		<div id="foot" class="">
+			<div id="foot_logo" class="">
+				
+			</div>
+			<div id="foot_text" class="">
+				<span class="">
+					
+				</span>
+				<div>
+					
+				</div>
+			</div>
+		</div>
+	</footer>
+	{% block scripts3 %}{% endblock %}
+</body>

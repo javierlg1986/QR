@@ -1,0 +1,29 @@
+{% extends "html/web/base.html" %}
+
+{% block title %}<title>Inicio - {{g.app_name}}</title>{% endblock %}
+{% block scripts %}
+<script src="static/js/inicio.js" crossorigin=""></script>
+<script src="static/js/common.js" crossorigin=""></script>
+<!-- <script src="static/js/traballos.js" crossorigin=""></script> -->
+<script src="{{url_for('static', filename='js/leaflet.js')}}"></script>
+{% endblock %}
+{% block scripts2 %}
+<link rel="stylesheet" href="static/css/inicio.css">
+<link rel="stylesheet" href="{{url_for('static', filename='css/leaflet.css')}}" crossorigin=""/>
+{% endblock %}
+
+{% block content %}
+<div id="contenido">
+    <div class="primer_panel">
+        <div id="nota_ensaio">><p><em>Hola mundo!</em></p></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block menu %}{% include "html/web/menu.html" %}{% endblock %}
+{% block scripts3 %}
+    <!-- <script src="{{url_for('static', filename='js/mapa_base.js')}}"></script>
+    <!-- <script>{% include "js/mapa_traballos.js" %}</script> -->
+	<!-- <script>{% include "js/mapa_visor.js" %}</script>
+    <script src="{{url_for('static', filename='js/geoposicionamiento.js')}}"></script> --> -->
+{% endblock %}

@@ -1,0 +1,15 @@
+{% macro menu_icon(link, icon, label) %}
+<li class="{{'resaltado' if request.path == enlace }}">
+  <a href="{{link}}">
+    <span id="" class=""><i class="material-icons {%if request.path ==  enlace%}resaltado{% endif %}">{{icon}}</i></span>
+    <apartado class="texto_menu clicable">{{label}}</apartado>
+  </a>
+</li>
+{% endmacro %}
+
+{{ menu_icon("/", "home", "Inicio") }}
+{% if session.ambito == "admin" %}
+{{ menu_icon("/usuarios", "manage_accounts", "Xestión usuarios") }}
+{% endif %}
+{{ menu_icon("/axustes", "settings", "Axustes") }}
+{{ menu_icon("/acerca_de", "info", "Acerca de...") }}

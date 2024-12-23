@@ -1,0 +1,30 @@
+{% extends "html/web/base.html" %}
+
+{% block title %}<title>Login - {{g.app_name}}</title>{% endblock %}
+{% block scripts %}
+<script src="{{url_for('static', filename='/js/login.js')}}" crossorigin=""></script>
+{% endblock %}
+{% block scripts2 %}
+<link rel="stylesheet" href="{{url_for('static', filename='/css/login.css')}}">
+{% endblock %}
+
+{% block content %}
+<div id="contenido">
+
+    <div id="contenedor">
+        {% if error %}
+        <span>{{error}}</span>
+        {% endif %}
+        <form action="{{request.path}}" method="post">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" name="username" placeholder="usuario"><br>
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" name="password" placeholder="contrasinal">
+            <input id="boton_login" type="submit" class="button" value="Acceder">
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+{% block menu %}{% endblock %}
+{% block mapa %}{% endblock %}
