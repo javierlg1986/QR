@@ -33,6 +33,7 @@ def init_app(app):
     """Register database functions with the Flask app. This is called by
     the application factory.
     """
+    
     app.teardown_appcontext(close_db)
 
 
