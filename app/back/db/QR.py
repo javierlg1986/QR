@@ -1,110 +1,109 @@
 # -*- coding: utf-8 -*-
-
-from flask import jsonify, request, render_template
-from os import path, makedirs, remove
-from werkzeug.utils import secure_filename
+from flask import session, jsonify
 from datetime import datetime
+import uuid
+import qrcode
+from PIL import Image
 
 from app import app
-from app.back.aux_.auditoria import log, remote_ip, log_db
+from app.back.aux_.auditoria import log_db
 from app.back.aux_.seguridad import permiso
 from app.back.aux_.db import get_db
-from app.back.aux_.tools import allowed_file, creaThumbnail
 from app.back.aux_.config import app_conf
-from app.back.aux_.constants import TABLAS
+from app.back.aux_.tools import sqliteRow2list_dict
 
 # Funcionalidad para la creación (y borrado, a decidir) de códigos QR y sus token asociados. Tomado como plantilla crear foto, a elaborar.
+class CodigoQR():
+    def __init__(self, data, nombre_archivo):
+        self.data = data
+        self.nombre_archivo = nombre_archivo
 
-# @app.route('/_crea_foto', methods=['POST'])
-# @permiso
-# def _crea_foto():
-#     tabla = request.form.get("tabla")
-#     id_tabla = request.form.get("id_tabla")
-#     etiqueta = request.form.get("etiqueta")
-#     editar = request.form.get("editar")
-#     if 'file' not in request.files:
-#         log(exito=0, ip=remote_ip())
-#         return jsonify({
-#             "error": "Non se atopa a foto."
-#         }), 400
-#     file = request.files.get('file')
-#     if tabla not in TABLAS:
-#         log(exito=0, ip=remote_ip())
-#         return jsonify({
-#              "error": "Táboa incorrecta."
-#         }), 400
-#     db = get_db()
-#     cur = db.cursor()
-#     cur.execute(f"""
-#         INSERT INTO fotos_{TABLAS[tabla][0]}
-#         ({TABLAS[tabla][1]}, etiqueta)
-#         VALUES (?, ?)
-#         """, (id_tabla, etiqueta))
-#     id_foto = cur.lastrowid
-#     fecha = datetime.now().strftime("%Y%m%d")
-#     ruta = f"{fecha}_{tabla[:1]}{id_tabla}_{id_foto}.jpg"
-#     cur.execute(f"""
-#         UPDATE fotos_{TABLAS[tabla][0]}
-#         SET ruta = ?
-#         WHERE id = ?
-#         """, (ruta, id_foto))
-#     directorio = f"{app_conf.ruta}front/static_priv/fotos/{tabla}/"
-#     makedirs(directorio, exist_ok=True)
-#     if file and allowed_file(file.filename, 'img'):
-#         try:
-#             file.save(path.join(directorio, ruta))
-#             db.commit()
-#             creaThumbnail(directorio, ruta)
-#         except Exception as e:
-#             db.close()
-#             log(exito=0)
-#             return jsonify({
-#                 "error": "Erro gardando o ficheiro."
-#             }), 400
+    def generar_qr(self):
+        imagen = qrcode.make(self.data)
+        nombre_archivo = self.nombre_archivo
+        imagen.save(nombre_archivo)
+        Image.open(nombre_archivo).show()
 
-#     nueva_foto = render_template(
-#         "html/web/common/foto.html",
-#         foto={
-#             "id": id_foto,
-#             "etiqueta": etiqueta,
-#             "ruta": ruta
-#         },
-#         tabla=tabla,
-#         id_tabla=id_tabla,
-#         editar=int(editar)
-#     )
-#     log_db(f"fotos_{TABLAS[tabla][0]}", id_foto, "C", None)
-#     return jsonify({"nueva_foto": nueva_foto})
+@app.route('/_crea_QR_db', methods=['POST'])
+@permiso
+def _crea_QR_db():
+    db = get_db()
+    cur = db.cursor()
+    fecha = datetime.now().replace(
+        microsecond=0
+        ).timestamp()
+    id_usuario = session.get('id_usuario')
+    cur.execute("""
+        INSERT INTO QR
+        (fecha, id_usuario)
+        VALUES (?, ?)
+        """, (fecha, id_usuario))
+    db.commit()
+    id_QR = cur.lastrowid
+    token_QR = crea_token_QR(id_QR)
+    actualiza_token_QR(token_QR, id_QR)
+    log_db("QR", id_QR, "C", token_QR)
+    return jsonify({
+        'id_QR': id_QR,
+        'token_QR': token_QR
+        })
+
+@app.route('/_crea_QR_imagen/<int:id_QR_request>', methods=['GET','POST'])
+@permiso
+def _crea_QR_imagen(id_QR_request):
+    id_QR = id_QR_request
+    #añadir a configuración
+    url = "https://auditorias.rexega.com/rede-PADR-"+str(id_QR)
+    nombre_archivo = "imagen_codigo"+str(id_QR)+".png"
+    qr_generador = CodigoQR(url, nombre_archivo)
+    qr_generador.generar_qr()
+
+    return jsonify({
+        'id_QR': id_QR
+        })
+
+@app.route('/_borra_QR_db/<int:id_QR_request>', methods=['GET','POST'])
+@permiso
+def _borra_QR_db(id_QR_request):
+    id_QR = id_QR_request
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("""
+        DELETE FROM QR
+        WHERE id = ?
+        """, (id_QR,))
+    db.commit()
+    log_db("QR", id_QR, "D", id_QR)
+    return jsonify({
+        'id_QR': id_QR,
+        })
+
+@app.route('/_QR_db/<int:id_QR_request>')
+@permiso
+def _QR_db(id_QR_request):
+    id_QR = id_QR_request
+    db = get_db()
+    cur = db.cursor()
+    QR_leido = sqliteRow2list_dict(cur.execute("""
+        Select * FROM QR
+        WHERE id = ?
+        """, (id_QR,)).fetchall())
+    db.commit()
+    return jsonify(QR_leido[0])
+
+def crea_token_QR(id_QR):
+    token_QR_uuid=uuid.uuid4().hex
+    return token_QR_uuid
+
+def actualiza_token_QR(token_QR_actualizar, id_QRactualizar):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("""
+        UPDATE QR
+        SET tokenQR = ?
+        WHERE id = ?
+        """, (token_QR_actualizar, id_QRactualizar))
+    db.commit()
+    return
 
 
-# @app.route("/_borra_foto", methods=['POST'])
-# @permiso
-# def _borra_foto():
-#     id_foto = request.form.get('id_foto')
-#     tabla = request.form.get('tabla')
-#     if tabla not in TABLAS:
-#         log(exito=0, ip=remote_ip())
-#         return jsonify({
-#              "error": "Táboa incorrecta."
-#         }), 400
-#     db = get_db()
-#     cur = db.cursor()
-#     cur.execute(f"""
-#         SELECT ruta
-#         FROM fotos_{TABLAS[tabla][0]}
-#         WHERE id = ?
-#         """, (id_foto,))
-#     ruta = cur.fetchone()['ruta']
-#     directorio = f"{app_conf.ruta}front/static_priv/fotos/{tabla}/"
-#     try:
-#         remove(path.join(directorio, ruta))
-#         remove(path.join(directorio, 'tn/', ruta))
-#     except Exception as e:
-#         log(exito=0)
-#     cur.execute(f"""
-#         DELETE FROM fotos_{TABLAS[tabla][0]}
-#         WHERE id = ?
-#         """, (id_foto,))
-#     db.commit()
-#     log_db(f"fotos_{TABLAS[tabla][0]}", id_foto, "D", ruta)
-#     return jsonify()

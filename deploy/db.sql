@@ -37,6 +37,14 @@ CREATE TABLE parameters (
     family VARCHAR(254)
 );
 
+CREATE TABLE QR (
+    id INTEGER PRIMARY KEY,
+    tokenQR VARCHAR(254) UNIQUE,
+    fecha INTEGER,
+    id_usuario INTEGER,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+);
+
 -- CREATE TABLE traballos (
 --     id INTEGER PRIMARY KEY,
 --     expediente VARCHAR(24),

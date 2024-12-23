@@ -4,7 +4,7 @@
 {% block scripts %}
 <script src="static/js/inicio.js" crossorigin=""></script>
 <script src="static/js/common.js" crossorigin=""></script>
-<!-- <script src="static/js/traballos.js" crossorigin=""></script> -->
+<script src="static/js/QR.js" crossorigin=""></script>
 <script src="{{url_for('static', filename='js/leaflet.js')}}"></script>
 {% endblock %}
 {% block scripts2 %}
@@ -15,8 +15,12 @@
 {% block content %}
 <div id="contenido">
     <div class="primer_panel">
-        Hola mundo!!!!!
+        <div id="inicia_crea_QR_db" class="button" onclick="creaQRdb()">Novo QR</div>
+        <div id="confirma_crea_QR_db" class="hidden">
+            <div class="button acept" onclick="confirmaCreaQRdb()">Confirma creación novo QR</div>
+            <div class="button cancel" onclick="cancelaCreaQRdb()">Cancela creación novo QR</div>
         </div>
+        
     </div>
 </div>
 {% endblock %}
