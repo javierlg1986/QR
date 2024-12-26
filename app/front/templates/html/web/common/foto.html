@@ -1,0 +1,5 @@
+<div id="foto{{foto.id}}" class="foto">
+    <img src="static_priv/fotos/{{tabla}}/{{foto.ruta}}" alt=""><br>
+    <i class="fa-solid fa-trash {{'hidden' if not editar}} edit{{tabla}}{{id_tabla}}" onclick="borraFoto({{foto.id}}, '{{tabla}}')"></i>
+    <span>{{foto.etiqueta}}</span>
+</div>

@@ -1,0 +1,25 @@
+{% extends "html/web/base.html" %}
+<!-- {% import 'html/web/common/macros.html' as macros %} -->
+
+{% block titulo %}<title>QR</title>{% endblock %}
+{% block scripts %}
+<script src="{{url_for('static', filename='js/compressor.min.js')}}" crossorigin=""></script>
+<script src="{{url_for('static', filename='js/QR.js')}}" crossorigin=""></script>
+<!-- <script src="{{url_for('static', filename='js/fotos.js')}}" crossorigin=""></script> -->
+{% endblock %}
+{% block scripts2 %}
+<!-- <link rel="stylesheet" href="{{url_for('static', filename='css/ensaios.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='css/fotos.css')}}"> -->
+{% endblock %}
+
+{% block content %}
+<div id="contenido">
+    {% include  "html/web/QR/panel_ver_QR.html" %}
+    {% if not QR_asignado %}
+    {% include  "html/web/QR/panel_asignar_QR.html" %}
+    {% endif %}
+</div> 
+{% endblock %}
+{% block menu %}{% include "html/web/menu.html" %}{% endblock %}
+{% block scripts3 %}{% endblock %}
+

@@ -1,0 +1,160 @@
+<!-- Input con título y label -->
+
+{% macro input_label(label, index, name, tabla, id_tabla, value, placeholder='', hidden_label=1, related_table='', id_related_table='', decimal='', classes="") %}
+{{ label_title(label, index, tabla, id_tabla, hidden_label, name, related_table, id_related_table) }}
+{{ label_(index, tabla, id_tabla, value, 0, name, related_table, id_related_table, classes, decimal=decimal) }}
+{{ input(index, name, tabla, id_tabla, value, placeholder, related_table, id_related_table, decimal=decimal)}}
+{% endmacro %}
+
+<!-- Macros separadas del anterior -->
+
+{% macro label_title(label, index, tabla, id_tabla, hidden_label, name, related_table, id_related_table, edit_mode=1) %}
+<span id="label-{{tabla}}{{id_tabla}}-{{index}}{% if related_table %}_{{id_related_table}}{{name}}{% endif %}" class="label {% if edit_mode %}label{{tabla}}{{id_tabla}}{% endif %} {% if hidden_label %}edit{{tabla}}{{id_tabla}} hidden {% endif %}">{{label}}</span>
+{% endmacro %}
+
+{% macro label_(index, tabla, id_tabla, value, edit, name, related_table, id_related_table, classes='', decimal='') %}
+<span id="text-{{tabla}}{{id_tabla}}-{{index}}{% if related_table %}_{{id_related_table}}{{name}}{% endif %}" class="edit{{tabla}}{{id_tabla}} {{'hidden' if edit}} {{classes}} text">{% if not decimal %}{{value if value else '-'}}{% else %}{{value | formato_decimal if value else '-'}}{% endif %}</span>
+{% endmacro %}
+
+{% macro input(index, name, tabla, id_tabla, value, placeholder, related_table, id_related_table, decimal=0, edit=0) %}
+<input id="value-{{tabla}}{{id_tabla}}-{{index}}{% if related_table %}_{{id_related_table}}{{name}}{% endif %}" type="text" class="value edit{{tabla}}{{id_tabla}} {{'hidden' if not edit}} {{related_table}}" name="{% if related_table %}{{id_related_table}}|{% endif %}{{name}}" value="{{value if value}}" oninput="changeValue(this)" autocomplete="off" {% if placeholder %}placeholder="{{placeholder}}"{% endif %} {% if decimal %}onkeyup="replaceDecimalPoint(this)"{% endif %}>
+{% endmacro %}
+
+<!-- Ver y subir fotos -->
+ {% macro fotos(tabla, id_tabla, fotos) %}
+ <div id="contenedor_fotos-{{tabla}}{{id_tabla}}" class="hidden contenedor_fotos">
+    <br>
+    <span>Nova foto:</span><br>
+    <div class="grid_container grid_2buttons">
+        <div id="boton_foto-{{tabla}}{{id_tabla}}Xeral" class="button boton_foto-{{tabla}}{{id_tabla}}" onclick="asignaEtiqueta('Xeral', '{{tabla}}', {{id_tabla}})">Xeral</div>
+        <div id="boton_foto-{{tabla}}{{id_tabla}}Detalle" class="button boton_foto-{{tabla}}{{id_tabla}}" onclick="asignaEtiqueta('Detalle', '{{tabla}}', {{id_tabla}})">Detalle</div>
+    </div>
+    <input id="value-{{tabla}}{{id_tabla}}-label" type="text" class="hidden">
+    <input id="input_foto-{{tabla}}{{id_tabla}}" type="file" class="hidden" oninput="comprimirFoto({{id_tabla}}, this, '{{tabla}}')">
+    <div class="mensaje_estado_foto">
+        <i id="success_photo-{{tabla}}{{id_tabla}}" class="fa-solid fa-circle-check hidden correct"></i> 
+        <span id="photo_message-{{tabla}}{{id_tabla}}" class="hidden"></span>
+    </div>
+    <hr>
+    <div id="contenedor_subidas-{{tabla}}{{id_tabla}}" class="{{'hidden' if not fotos}}">
+        <span>Fotos subidas:</span><br>
+        <div id="fotos-{{tabla}}{{id_tabla}}" class="grid_container grid_fotos">
+            {% for foto in fotos if foto['id_' + tabla | lower] == id_tabla %}
+            {% include 'html/web/common/foto.html' %}
+            {% endfor %}
+        </div>
+        <hr>
+    </div>
+ </div>
+ {% endmacro %}
+
+ <!-- Input de foto y etiqueta -->
+ {% macro documentos(tabla, id_tabla, documentos) %}
+ <div id="contenedor_documentos-{{tabla}}{{id_tabla}}" class="hidden contenedor_documentos">
+    <br>
+    
+    <div class="grid_container grid_2buttons">
+        <div id="boton_documento-{{tabla}}{{id_tabla}}" class="button boton_documento-{{tabla}}{{id_tabla}}" onclick="$(`#input_documento-{{tabla}}{{id_tabla}}`).click()">Novo documento</div>
+    </div>
+    <input id="value-{{tabla}}{{id_tabla}}-label" type="text" class="hidden">
+    <input id="input_documento-{{tabla}}{{id_tabla}}" type="file" class="hidden" oninput="subeDocumento({{id_tabla}}, this, '{{tabla}}')">
+    <div class="mensaje_estado_documento">
+        <i id="success_doc-{{tabla}}{{id_tabla}}" class="fa-solid fa-circle-check hidden correct"></i> 
+        <span id="doc_message-{{tabla}}{{id_tabla}}" class="hidden"></span>
+    </div>
+    <hr>
+    <div id="contenedor_subidos-{{tabla}}{{id_tabla}}" class="{{'hidden' if not documentos}}">
+        <span>Documentos subidos:</span><br>
+        <div id="documentos-{{tabla}}{{id_tabla}}" class="grid_container grid_documentos">
+            {% for documento in documentos if documento['id_' + tabla | lower] == id_tabla %}
+            {% include 'html/web/common/documento.html' %}
+            {% endfor %}
+        </div>
+        <hr>
+    </div>
+ </div>
+ {% endmacro %}
+
+<!-- Botones numéricos para cubrir el input -->
+
+{% macro input_numbers_buttons(label, index, name, tabla, id_tabla, value, edit=0, related_table='', id_related_table='') %}
+{{ label_title(label, index, tabla, id_tabla, 0, name, related_table, id_related_table, edit_mode=0) }}
+{{ label_(index, tabla, id_tabla, value, edit, name, related_table, id_related_table) }}
+{{ input(index, name, tabla, id_tabla, value, '', related_table, id_related_table)}}
+
+<div class="grid_container grid_3buttons edit{{tabla}}{{id_tabla}}  {{'hidden' if not edit}}">
+    {% for i in range(1, 10) %}
+    <div class="button button-{{tabla}}{{id_tabla}}-{{index}}" onclick="addOnInput('{{i}}', this)">{{i}}</div>
+    {% endfor %}
+    <div class="button button-{{tabla}}{{id_tabla}}-{{index}}" onclick="addOnInput(',', this)">,</div>
+    <div class="button button-{{tabla}}{{id_tabla}}-{{index}}" onclick="addOnInput('0', this)">0</div>
+    <div class="button button-{{tabla}}{{id_tabla}}-{{index}}" onclick="$('#value-{{tabla}}{{id_tabla}}-{{index}}').val($('#value-{{tabla}}{{id_tabla}}-{{index}}').val().substring(0,$('#value-{{tabla}}{{id_tabla}}-{{index}}').val().length -1))"><span class="fa-solid fa-delete-left"></span></div>
+</div>
+{% endmacro %}
+
+
+<!-- Botones parameters para cubrir el input -->
+
+{% macro input_parameter(label, index, name, tabla, id_tabla, value, parameters, n_of_buttons, edit=0, related_table='', id_related_table='', hidden_label=0, classes='', onclick='', preventDefault=0) %}
+{{ label_title(label, index, tabla, id_tabla, hidden_label, name, related_table, id_related_table, edit_mode=0) }}
+{% if value %}{% set value_parameter = parameters[value].label %}
+{% else %}{% set value_parameter = '' %}{% endif %}
+
+{{ label_(index, tabla, id_tabla, value_parameter, edit, name, related_table, id_related_table, classes) }}
+<input id="value-{{tabla}}{{id_tabla}}-{{index}}{% if related_table %}_{{id_related_table}}{{name}}{% endif %}" type="text" class="value hidden {{related_table}}" name="{% if related_table %}{{id_related_table}}|{% endif %}id_{{name}}" value="{{value if value}}" oninput="changeValue(this)" autocomplete="off">
+<div class="grid_container grid_{{n_of_buttons}}buttons {{'hidden' if not edit}} edit{{tabla}}{{id_tabla}}">
+    {% for parameter in parameters if parameters[parameter].family == name %}
+    <div id="parameter_{{parameter}}" class="button button-{{tabla}}{{id_tabla}}-{{index}} {% if value == parameter %}clicked{% endif %}" onclick="{{onclick}}{% if not preventDefault %}writeOnInput({{parameter}}, this);{% endif %}">{{parameters[parameter].label}}</div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+
+<!-- Botones sí y no para cubrir el input -->
+
+{% macro input_boolean(label, index, name, tabla, id_tabla, value, edit=0, related_table='', id_related_table='') %}
+{{ label_title(label, index, tabla, id_tabla, 0, name, related_table, id_related_table, edit_mode=0) }}
+{% if value %}{% set boolean = 'Si' %}{% else %}{% set boolean = 'Non' %}{% endif %}
+{{ label_(index, tabla, id_tabla, boolean, edit, name, related_table, id_related_table) }}
+<input id="value-{{tabla}}{{id_tabla}}-{{index}}{% if related_table %}_{{id_related_table}}{{name}}{% endif %}" type="text" class="value hidden {{related_table}}" name="{% if related_table %}{{id_related_table}}|{% endif %}{{name}}" value="{{value if value}}" oninput="changeValue(this)" autocomplete="off">
+<div class="grid_container grid_2buttons {{'hidden' if not edit}} edit{{tabla}}{{id_tabla}}">
+    <div id="boolean{{tabla}}{{id_tabla}}id_{{name}}_1" class="button button-{{tabla}}{{id_tabla}}-{{index}} {% if value %}clicked{% endif %}" onclick="writeOnInput(1, this)">Si</div>
+    <div id="boolean{{tabla}}{{id_tabla}}id_{{name}}_0" class="button button-{{tabla}}{{id_tabla}}-{{index}} {% if not value %}clicked{% endif %}" onclick="writeOnInput(0, this)">Non</div>
+</div>
+{% endmacro %}
+
+
+<!-- Textarea con título y label -->
+
+{% macro textarea(label, index, name, tabla, id_tabla, value, edit=0, related_table='', id_related_table='') %}
+{{ label_title(label, index, tabla, id_tabla, 0, name, related_table, id_related_table) }}
+{{ label_(index, tabla, id_tabla, value, edit, name, related_table, id_related_table) }}
+<textarea id="value-{{tabla}}{{id_tabla}}-{{index}}{% if related_table %}_{{id_related_table}}{{name}}{% endif %}" class="value edit{{tabla}}{{id_tabla}} {{'hidden' if not edit}} {{related_table}}" name="{% if related_table %}{{id_related_table}}|{% endif %}{{name}}" value="" rows="6" cols="90" oninput="changeValue(this)">{{value if value}}</textarea>
+{% endmacro %}
+
+
+<!-- Sistema de datalists, con input para mostrar y otro con el id que se envía a servidor -->
+
+{% macro input_datalist(label, index, name, tabla, id_tabla, value, texto_value, nombre_lista, campo='id', placeholder='', funcion="") %}
+{{ label_title(label, index, tabla, id_tabla, 0, name) }}
+{{ label_(index, tabla, id_tabla, texto_value, 0, name) }}
+{{ tags_input_datalist(index, name, tabla, id_tabla, value, texto_value, nombre_lista, campo, placeholder, funcion) }}
+{% endmacro %}
+
+{% macro tags_input_datalist(index, name, tabla, id_tabla, value, texto_value, nombre_lista, campo='id', placeholder='', funcion="") %}
+<input id="value-{{tabla}}{{id_tabla}}-{{index}}-vinculado" type="text" class="value hidden {{related_table}}" onkeyup="" name="{% if campo == 'id' %}id_{% endif %}{{name}}" value="{{value if value}}">
+<input id="seleccion-{{tabla}}{{id_tabla}}-{{index}}" type="text" class="value vinculado edit{{tabla}}{{id_tabla}} hidden" oninput="editInputDatalist(this);{{funcion}}" value="{{ texto_value if texto_value }}" placeholder="{{placeholder}}" autocomplete="off" list="{{nombre_lista}}"/>
+{% endmacro %}
+
+
+<!-- Precarga de datos de datalist para ser usada en el anterior -->
+
+{% macro datalist(list_name, list, text, field='id') %}
+<datalist id="{{list_name}}">
+    {% for table in list %}
+    <option name="{{table[text] | escape}}" campo="{{table[field]}}">
+        {{table[text]}}
+    </option>
+    {% endfor %}
+</datalist> 
+{% endmacro %}

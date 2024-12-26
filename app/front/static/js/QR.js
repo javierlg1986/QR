@@ -20,8 +20,8 @@ function cancelaCreaQRdb() {
     $(`#inicia_crea_QR_db`).removeClass("hidden");
 }
 
-function creaQRimagen() {
-    $.post('/_crea_QR_imagen/1', {
+function creaQRimagen(token_QR) {
+    $.post('/_crea_QR_imagen/'+token_QR, {
         token: token
     }, function(data) {
     $(`#confirma_crea_QR_db`).addClass("hidden");
@@ -29,6 +29,19 @@ function creaQRimagen() {
     }).fail(function(data) {
         errorMsg(data);
     });
+}
+
+function asignaQRinv() {
+    $(`#confirma_asignar_QR`).removeClass("hidden");
+    $(`#inicia_asignar_QR`).addClass("hidden");
+}
+
+function confirmaAsignaQRinv() {
+}
+
+function cancelaAsignaQRinv() {
+    $(`#confirma_asignar_QR`).addClass("hidden");
+    $(`#inicia_asignar_QR`).removeClass("hidden");
 }
 
 // function actualizaQRdb(id_QR) {
