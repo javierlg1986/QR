@@ -21,7 +21,7 @@ def vista_QR(token_QR_request):
     QR_img64 = _crea_QR_imagen(token_QR_request)
     QR_datos=json.loads(verificar_QR_asignado(token_QR_request).get_data().decode("utf-8"))
     if QR_datos['QR_asignado']==True:
-        return "redirigir a aplicación inventario"
+        return "redirigir a aplicación inventario", QR_datos
     else:
         return render_template(
             "html/web/QR/index.html",

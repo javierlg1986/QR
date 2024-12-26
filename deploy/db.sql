@@ -42,7 +42,15 @@ CREATE TABLE QR (
     tokenQR VARCHAR(254) UNIQUE,
     fecha INTEGER,
     id_usuario INTEGER,
+    tabla_asignada INTEGER,
+    id_elem_en_tabla_asig INTEGER,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+    FOREIGN KEY (id_elem_en_tabla_asig) REFERENCES lista_tablas(id)
+);
+
+CREATE TABLE lista_tablas (
+    id INTEGER PRIMARY KEY,
+    nombre_tabla VARCHAR(254) UNIQUE
 );
 
 -- CREATE TABLE traballos (
