@@ -30,6 +30,11 @@ def vista_QR(token_QR_request):
             QR_asignado = QR_datos['QR_asignado'],
         )
     
+@app.route('/_lista_QR_no_asignados', methods=['POST'])
+@permiso
+def lista_QR_no_asignados():
+    return "Lista"
+    
 def verificar_QR_asignado(token_QR):
     QR_asignado = False
     tabla_asignada = "tabla_ejemplo"

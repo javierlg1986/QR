@@ -32,8 +32,19 @@ function creaQRimagen(token_QR) {
 }
 
 function asignaQRinv() {
+    $.post('/_lista_QR_no_asignados', {
+        token: token
+    }, function(data) {
     $(`#confirma_asignar_QR`).removeClass("hidden");
     $(`#inicia_asignar_QR`).addClass("hidden");
+    creaQRimagen();
+    }).fail(function(data) {
+        errorMsg(data);
+    });
+}
+
+
+function muestralistadoAsignaQRinv() {
 }
 
 function confirmaAsignaQRinv() {

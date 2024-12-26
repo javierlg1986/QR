@@ -53,6 +53,32 @@ CREATE TABLE lista_tablas (
     nombre_tabla VARCHAR(254) UNIQUE
 );
 
+CREATE TABLE Tabla_1 (
+    id INTEGER PRIMARY KEY,
+    campo_1 VARCHAR(254),
+    campo_2 VARCHAR(254),
+    campo_3 REAL,
+    campo_4 REAL
+);
+
+CREATE TABLE Tabla_2 (
+    id INTEGER PRIMARY KEY,
+    campo_1 VARCHAR(254),
+    campo_2 VARCHAR(254),
+    campo_3 REAL,
+    campo_4 REAL
+);
+
+CREATE TABLE Tabla_3 (
+    id INTEGER PRIMARY KEY,
+    campo_1 VARCHAR(254),
+    campo_2 VARCHAR(254),
+    campo_3 REAL,
+    campo_4 REAL,
+    campo_5 REAL
+);
+
+
 -- CREATE TABLE traballos (
 --     id INTEGER PRIMARY KEY,
 --     expediente VARCHAR(24),
