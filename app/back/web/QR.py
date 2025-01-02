@@ -11,36 +11,65 @@ from app.back.aux_.seguridad import permiso, esFloat
 from app.back.aux_.tools import serializado_a_diccionario,\
     actualiza_BBDD_diccionario, sqliteRow2dict_dict,\
     id_vinculados
-from app.back.db.QR import obtener_id_QR_de_token_QR, QR_db_por_id, _crea_QR_imagen
+from app.back.db.QR import QR_db_por_token, _crea_QR_imagen, _crea_QR_db, _listado_elementos_sin_QR_db
 
 @app.route('/QR/<string:token_QR_request>')
 @permiso
 def vista_QR(token_QR_request):
-    id_QR_request = obtener_id_QR_de_token_QR(token_QR_request)
-    QR_db_info = QR_db_por_id(id_QR_request)
-    QR_img64 = _crea_QR_imagen(token_QR_request)
-    QR_datos=json.loads(verificar_QR_asignado(token_QR_request).get_data().decode("utf-8"))
-    if QR_datos['QR_asignado']==True:
-        return "redirigir a aplicación inventario", QR_datos
+    QR_db_info = QR_db_por_token(token_QR_request)
+    QR_img64 = _crea_QR_imagen(token_QR_request)  
+
+    if QR_db_info['id_elem_en_tabla_asig']!=None and QR_db_info['id_elem_en_tabla_asig']!=0 and QR_db_info['tabla_asignada']!=None and QR_db_info['tabla_asignada']!=0:
+        return "redirigir a la vista del elemento asignado"
     else:
         return render_template(
             "html/web/QR/index.html",
             QR_db_info = QR_db_info,
             QR_img64 = QR_img64,
-            QR_asignado = QR_datos['QR_asignado'],
+            QR_asignado = False,
         )
     
-@app.route('/_lista_QR_no_asignados', methods=['POST'])
+@app.route('/configurar_QR/<string:token_QR_request>')
 @permiso
-def lista_QR_no_asignados():
-    return "Lista"
+def vista_configurar_QR(token_QR_request):
+    QR_db_info = QR_db_por_token(token_QR_request)
+    QR_img64 = _crea_QR_imagen(token_QR_request)   
     
-def verificar_QR_asignado(token_QR):
-    QR_asignado = False
-    tabla_asignada = "tabla_ejemplo"
-    id_tabla_asignada = "id_tabla_ejemplo"
-    return jsonify({
-                "QR_asignado": QR_asignado,
-                "tabla_asignada": tabla_asignada,
-                "id_tabla_asignada": id_tabla_asignada,
-            })
+    if QR_db_info['id_elem_en_tabla_asig']!=None and QR_db_info['id_elem_en_tabla_asig']!=0 and QR_db_info['tabla_asignada']!=None and QR_db_info['tabla_asignada']!=0:
+        return render_template(
+            "html/web/QR/index.html",
+            QR_db_info = QR_db_info,
+            QR_img64 = QR_img64,
+            QR_asignado = True,
+        )
+    else:
+        return render_template(
+            "html/web/QR/index.html",
+            QR_db_info = QR_db_info,
+            QR_img64 = QR_img64,
+            QR_asignado = False,
+        )
+
+@app.route('/_crea_QR' , methods=['POST'])
+@permiso
+def crea_QR():
+    QR_db_info = _crea_QR_db()
+    QR_img64 = _crea_QR_imagen(QR_db_info['tokenQR'])   
+    return render_template(
+        "html/web/QR/panel_QR.html",
+        QR_db_info = QR_db_info,
+        QR_img64 = QR_img64,
+        QR_asignado = False,
+    )
+
+    
+@app.route('/_listado_elementos_sin_QR', methods=['POST'])
+@permiso
+def _listado_elementos_sin_QR():
+    listado_elementos_sin_QR_db=_listado_elementos_sin_QR_db()
+
+    return render_template(
+            "html/web/QR/listado_elementos_sin_QR.html",
+            listado_elementos_sin_QR_db = listado_elementos_sin_QR_db,
+        )
+    

@@ -1,0 +1,20 @@
+<div id="panel_interior_listado_elementos_sin_QR" class="panel_listado_elementos_sin_QR">
+    <div id="listado_elementos_sin_QR_título" class="titulo_panel">
+        <span class="title">Listaxe de elementos sen QR asignado</span>
+    </div>
+    <div id="instruccion_listado_elementos_sin_QR_título" class="instruccion_panel">
+        <span class="title">Seleccione o elemento na listaxe ou no mapa para asignación do QR e a continuación confirme a asignación</span>
+    </div>
+    <div id="listado_elementos_sin_QR">
+
+        {% for elemento in listado_elementos_sin_QR_db %}
+        <div id="panelElemento{{elemento.id}}" class="panel opciones">
+          <div id="elemento{{elemento.id}}tabla{{elemento.id_tabla}}" class="clicable elemento_lista_sin_QR" onclick="preseleccionaElementoAsignarQR({{elemento.id_tabla}}, {{elemento.id}})">
+            <div id="info{{elemento.id}}">Tabla {{elemento.id_tabla}} Elemento {{elemento.id}} Nombre {{elemento.campo_1}}  </div>
+          </div>         
+        </div>
+        {% endfor %}
+    </div>
+    <div id="mapa_elementos_sin_QR">
+    </div>
+</div>

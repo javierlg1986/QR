@@ -4,12 +4,13 @@ function creaQRdb() {
 }
 
 function confirmaCreaQRdb() {
-    $.post('/_crea_QR_db', {
+    $.post('/_crea_QR', {
         token: token
     }, function(data) {
     $(`#confirma_crea_QR_db`).addClass("hidden");
     $(`#inicia_crea_QR_db`).removeClass("hidden");
-    creaQRimagen();
+    $(`#panel_novo_QR_creado`).removeClass("hidden");
+    $(`#panel_ver_QR_creado`).html(data);
     }).fail(function(data) {
         errorMsg(data);
     });
@@ -20,40 +21,63 @@ function cancelaCreaQRdb() {
     $(`#inicia_crea_QR_db`).removeClass("hidden");
 }
 
-function creaQRimagen(token_QR) {
-    $.post('/_crea_QR_imagen/'+token_QR, {
-        token: token
-    }, function(data) {
-    $(`#confirma_crea_QR_db`).addClass("hidden");
-    $(`#inicia_crea_QR_db`).removeClass("hidden");
-    }).fail(function(data) {
-        errorMsg(data);
-    });
-}
+function iniciaAsignaQRinv() {
+    listadoQRnoasignados = muestralistadoAsignaQRinv();
 
-function asignaQRinv() {
-    $.post('/_lista_QR_no_asignados', {
-        token: token
-    }, function(data) {
     $(`#confirma_asignar_QR`).removeClass("hidden");
     $(`#inicia_asignar_QR`).addClass("hidden");
-    creaQRimagen();
+}
+
+function muestralistadoAsignaQRinv() {
+    $.post('/_listado_elementos_sin_QR', {
+        token: token
+    }, function(data) {
+        $(`#confirma_asignar_QR`).removeClass("hidden");
+        $(`#inicia_asignar_QR`).addClass("hidden");
+        $(`#panel_exterior_listado_elementos_sin_QR`).html(data);
     }).fail(function(data) {
         errorMsg(data);
     });
 }
 
-
-function muestralistadoAsignaQRinv() {
+function preseleccionaElementoAsignarQR(id_tabla_request, id_en_tabla_request) {
+    $(`#elemento${id_en_tabla_request}tabla${id_tabla_request}`).toggleClass("selected");
+    $(`#boton_asignar_QR_inhabilitado`).toggleClass("hidden");
+    $(`#boton_asignar_QR_habilitado`).toggleClass("hidden");
+    $(`#tabla_seleccionada_asignar_QR`).val(id_tabla_request);
+    $(`#elemento_seleccionado_asignar_QR`).val(id_en_tabla_request);
+    console.log($(`#tabla_seleccionada_asignar_QR`).val());
+    console.log($(`#elemento_seleccionado_asignar_QR`).val());
+    console.log($(`#elemento${id_en_tabla_request}tabla${id_tabla_request}`).hasClass("selected"));
 }
 
-function confirmaAsignaQRinv() {
+function confirmaAsignaQRinv(token_QR_request) {
+    $.post('/_asigna_QR_inv', {        
+        token_QR_request:token_QR_request,
+        tabla_request:$(`#tabla_seleccionada_asignar_QR`).val(),
+        id_en_tabla_request:$(`#elemento_seleccionado_asignar_QR`).val(),
+        token: token
+    }, function(data) {
+        console.log(data);
+        $(`#confirma_asignar_QR`).addClass("hidden");
+        $(`#inicia_asignar_QR`).removeClass("hidden");
+        preseleccionaElementoAsignarQR($(`#tabla_seleccionada_asugnar_QR`).val(), $(`#elemento_seleccionado_asignar_QR`).val())
+        $(`#panel_exterior_listado_elementos_sin_QR`).html();
+    }).fail(function(data) {
+        errorMsg(data);
+    });
 }
 
 function cancelaAsignaQRinv() {
     $(`#confirma_asignar_QR`).addClass("hidden");
     $(`#inicia_asignar_QR`).removeClass("hidden");
+    $(".elemento_lista_sin_QR").each(function() {
+        $(this).removeClass("selected");
+        $(`#boton_asignar_QR_inhabilitado`).removeClass("hidden");
+        $(`#boton_asignar_QR_habilitado`).addClass("hidden");
+    });
 }
+
 
 // function actualizaQRdb(id_QR) {
 //     $.post('/_actualiza_QR_db', {

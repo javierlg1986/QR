@@ -14,10 +14,7 @@
 
 {% block content %}
 <div id="contenido">
-    {% include  "html/web/QR/panel_ver_QR.html" %}
-    {% if not QR_asignado %}
-    {% include  "html/web/QR/panel_asignar_QR.html" %}
-    {% endif %}
+    {% include  "html/web/QR/panel_QR.html" %}
 </div> 
 {% endblock %}
 {% block menu %}{% include "html/web/menu.html" %}{% endblock %}
