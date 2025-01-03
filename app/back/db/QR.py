@@ -73,19 +73,8 @@ def _borra_QR_db(token_QR_request):
 @permiso
 def _listado_elementos_sin_QR_db():
     listado_elementos_sin_QR=[]
-    db = get_db()
-    cur = db.cursor()
-    lista_tablas = sqliteRow2list_dict(cur.execute("""
-        Select * FROM lista_tablas
-        """).fetchall())
-    db.commit()
-
-    query=''
-    elementos_inventario=[]
-    elemento_test={}
-    nombre_tabla=''
-    id_test=0
-
+    lista_tablas = obtener_lista_tablas()
+    # elementos_inventario=[]
     for tabla in lista_tablas:
         db = get_db()
         cur = db.cursor()
@@ -116,7 +105,16 @@ def _asigna_QR_inv():
     token_QR_request = request.form.get('token_QR_request')
     tabla_request = request.form.get('tabla_request')
     id_en_tabla_request = request.form.get('id_en_tabla_request')
-    
+    tabla_nombre="Tabla_"+str(tabla_request)
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(f"""
+        CREATE TABLE IF NOT EXISTS {tabla_nombre} (
+        id INTEGER PRIMARY KEY
+        )""")
+    db.commit()
+
     db = get_db()
     cur = db.cursor()
     cur.execute("""
@@ -125,13 +123,54 @@ def _asigna_QR_inv():
         WHERE tokenQR = ?
         """, (tabla_request, id_en_tabla_request, token_QR_request))
     db.commit()
+
     # log_db("QR", token_QR_request, "U", tabla_request)
     # log_db("QR", token_QR_request, "U", id_en_tabla_request)
+
     return jsonify({
         'token_QR': token_QR_request,
         'tabla_asignada': tabla_request,
         'id_elem_en_tabla_asig': id_en_tabla_request,
         })
+
+@app.route('/_desasigna_QR_inv', methods=['POST'])
+@permiso
+def _desasigna_QR_inv():
+    token_QR_request = request.form.get('token_QR_request')
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("""
+        UPDATE QR
+        SET tabla_asignada = NULL, id_elem_en_tabla_asig = NULL
+        WHERE tokenQR = ?
+        """, (token_QR_request,))
+    db.commit()
+
+    # log_db("QR", token_QR_request, "U", tabla_request)
+    # log_db("QR", token_QR_request, "U", id_en_tabla_request)
+
+    return jsonify({
+        'token_QR': token_QR_request,
+        'tabla_asignada': None,
+        'id_elem_en_tabla_asig': None,
+        })
+
+@app.route('/_panel_elemento_asignado_a_QR', methods=['POST'])
+@permiso
+def _panel_elemento_asignado_a_QR():
+    token_QR_request = request.form.get('token_QR_request')
+    QR_db_info = QR_db_por_token(token_QR_request)
+    QR_asignado = False
+
+    if QR_db_info['id_elem_en_tabla_asig']!=None or QR_db_info['id_elem_en_tabla_asig']!=0 or QR_db_info['tabla_asignada']!=None or QR_db_info['tabla_asignada']!=0:
+        QR_asignado = True
+
+    return render_template(
+        "html/web/QR/panel_elemento_asignado_a_QR.html",
+        QR_db_info = QR_db_info,
+        QR_asignado = QR_asignado
+    )
 
 def QR_db_por_token(token_QR_request):
     token_QR = token_QR_request
@@ -204,3 +243,12 @@ def guardar_QR_img(imagen, nombre_imagen):
                 "error": "Erro gardando o ficheiro."
             }), 400
 
+def obtener_lista_tablas():
+    db = get_db()
+    cur = db.cursor()
+    lista_tablas = sqliteRow2list_dict(cur.execute("""
+        Select * FROM lista_tablas
+        """).fetchall())
+    db.commit()
+    return lista_tablas
+    

@@ -35,7 +35,7 @@ def vista_configurar_QR(token_QR_request):
     QR_db_info = QR_db_por_token(token_QR_request)
     QR_img64 = _crea_QR_imagen(token_QR_request)   
     
-    if QR_db_info['id_elem_en_tabla_asig']!=None and QR_db_info['id_elem_en_tabla_asig']!=0 and QR_db_info['tabla_asignada']!=None and QR_db_info['tabla_asignada']!=0:
+    if QR_db_info['id_elem_en_tabla_asig']!=None or QR_db_info['id_elem_en_tabla_asig']!=0 or QR_db_info['tabla_asignada']!=None or QR_db_info['tabla_asignada']!=0:
         return render_template(
             "html/web/QR/index.html",
             QR_db_info = QR_db_info,

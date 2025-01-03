@@ -61,23 +61,53 @@ function confirmaAsignaQRinv(token_QR_request) {
         console.log(data);
         $(`#confirma_asignar_QR`).addClass("hidden");
         $(`#inicia_asignar_QR`).removeClass("hidden");
-        preseleccionaElementoAsignarQR($(`#tabla_seleccionada_asugnar_QR`).val(), $(`#elemento_seleccionado_asignar_QR`).val())
+        $(`#boton_desasignar_QR`).removeClass("hidden");
+        preseleccionaElementoAsignarQR($(`#tabla_seleccionada_asignar_QR`).val(), $(`#elemento_seleccionado_asignar_QR`).val())
         $(`#panel_exterior_listado_elementos_sin_QR`).html();
+        $(`#elemento_asignado_a_QR`).html();
+        actualizaPanelElementoAsignadoQR(token_QR_request,$(`#tabla_seleccionada_asignar_QR`).val(), $(`#elemento_seleccionado_asignar_QR`).val())
     }).fail(function(data) {
         errorMsg(data);
     });
 }
+
+function actualizaPanelElementoAsignadoQR(token_QR_request,id_tabla_request, id_en_tabla_request) {
+    $.post('/_panel_elemento_asignado_a_QR', {
+        token_QR_request:token_QR_request,
+        tabla_request: id_tabla_request,
+        id_en_tabla_request: id_en_tabla_request,
+        token: token
+    }, function(data) {
+        $(`#elemento_asignado_a_QR`).html(data);
+    }).fail(function(data) {
+        errorMsg(data);
+    });
+}
+
 
 function cancelaAsignaQRinv() {
     $(`#confirma_asignar_QR`).addClass("hidden");
     $(`#inicia_asignar_QR`).removeClass("hidden");
     $(".elemento_lista_sin_QR").each(function() {
         $(this).removeClass("selected");
-        $(`#boton_asignar_QR_inhabilitado`).removeClass("hidden");
-        $(`#boton_asignar_QR_habilitado`).addClass("hidden");
     });
+    $(`#boton_asignar_QR_inhabilitado`).removeClass("hidden");
+    $(`#boton_asignar_QR_habilitado`).addClass("hidden");
 }
 
+function desAsignaQRinv(token_QR_request) {
+    if (!confirm("Está seguro de que desexa desasignar o QR?")) {
+        return undefined
+    }
+    $.post('/_desasigna_QR_inv', {
+        token_QR_request: token_QR_request,
+        token: token
+    }, function(data) {
+        window.location.replace(`/QR/`+token_QR_request);
+    }).fail(function(data) {
+        errorMsg(data);
+    });
+}
 
 // function actualizaQRdb(id_QR) {
 //     $.post('/_actualiza_QR_db', {
