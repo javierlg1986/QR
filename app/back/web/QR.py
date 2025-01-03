@@ -12,12 +12,17 @@ from app.back.aux_.tools import serializado_a_diccionario,\
     actualiza_BBDD_diccionario, sqliteRow2dict_dict,\
     id_vinculados
 from app.back.db.QR import QR_db_por_token, _crea_QR_imagen, _crea_QR_db, _listado_elementos_sin_QR_db
+import configparser
+config_url = configparser.ConfigParser()
+config_url.read('configuracion.conf')
+url_QR=config_url['app_conf']['url_QR']
 
 @app.route('/QR/<string:token_QR_request>')
 @permiso
 def vista_QR(token_QR_request):
     QR_db_info = QR_db_por_token(token_QR_request)
-    QR_img64 = _crea_QR_imagen(token_QR_request)  
+    QR_img64 = _crea_QR_imagen(token_QR_request)
+    url_QR_token=url_QR+str(token_QR_request)
 
     if QR_db_info['id_elem_en_tabla_asig']!=None and QR_db_info['id_elem_en_tabla_asig']!=0 and QR_db_info['tabla_asignada']!=None and QR_db_info['tabla_asignada']!=0:
         return "redirigir a la vista del elemento asignado"
@@ -26,6 +31,7 @@ def vista_QR(token_QR_request):
             "html/web/QR/index.html",
             QR_db_info = QR_db_info,
             QR_img64 = QR_img64,
+            url_QR_token=url_QR_token,
             QR_asignado = False,
         )
     
@@ -33,13 +39,15 @@ def vista_QR(token_QR_request):
 @permiso
 def vista_configurar_QR(token_QR_request):
     QR_db_info = QR_db_por_token(token_QR_request)
-    QR_img64 = _crea_QR_imagen(token_QR_request)   
+    QR_img64 = _crea_QR_imagen(token_QR_request)
+    url_QR_token=url_QR+str(token_QR_request)   
     
     if QR_db_info['id_elem_en_tabla_asig']!=None or QR_db_info['id_elem_en_tabla_asig']!=0 or QR_db_info['tabla_asignada']!=None or QR_db_info['tabla_asignada']!=0:
         return render_template(
             "html/web/QR/index.html",
             QR_db_info = QR_db_info,
             QR_img64 = QR_img64,
+            url_QR_token=url_QR_token,
             QR_asignado = True,
         )
     else:
@@ -47,6 +55,7 @@ def vista_configurar_QR(token_QR_request):
             "html/web/QR/index.html",
             QR_db_info = QR_db_info,
             QR_img64 = QR_img64,
+            url_QR_token=url_QR_token,
             QR_asignado = False,
         )
 
@@ -54,15 +63,17 @@ def vista_configurar_QR(token_QR_request):
 @permiso
 def crea_QR():
     QR_db_info = _crea_QR_db()
-    QR_img64 = _crea_QR_imagen(QR_db_info['tokenQR'])   
+    QR_img64 = _crea_QR_imagen(QR_db_info['tokenQR'])
+    url_QR_token=url_QR+str(QR_db_info['tokenQR'])
     return render_template(
         "html/web/QR/panel_QR.html",
         QR_db_info = QR_db_info,
         QR_img64 = QR_img64,
+        url_QR_token=url_QR_token,
         QR_asignado = False,
     )
 
-    
+  
 @app.route('/_listado_elementos_sin_QR', methods=['POST'])
 @permiso
 def _listado_elementos_sin_QR():
@@ -72,4 +83,20 @@ def _listado_elementos_sin_QR():
             "html/web/QR/listado_elementos_sin_QR.html",
             listado_elementos_sin_QR_db = listado_elementos_sin_QR_db,
         )
+
+@app.route('/_panel_elemento_asignado_a_QR', methods=['POST'])
+@permiso
+def _panel_elemento_asignado_a_QR():
+    token_QR_request = request.form.get('token_QR_request')
+    QR_db_info = QR_db_por_token(token_QR_request)
+    QR_asignado = False
+
+    if QR_db_info['id_elem_en_tabla_asig']!=None or QR_db_info['id_elem_en_tabla_asig']!=0 or QR_db_info['tabla_asignada']!=None or QR_db_info['tabla_asignada']!=0:
+        QR_asignado = True
+
+    return render_template(
+        "html/web/QR/panel_elemento_asignado_a_QR.html",
+        QR_db_info = QR_db_info,
+        QR_asignado = QR_asignado
+    )
     

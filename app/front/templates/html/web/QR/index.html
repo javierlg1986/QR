@@ -1,15 +1,17 @@
 {% extends "html/web/base.html" %}
-<!-- {% import 'html/web/common/macros.html' as macros %} -->
+{% import 'html/web/common/macros.html' as macros %}
 
-{% block titulo %}<title>QR</title>{% endblock %}
+{% block titulo %}<title>{{g.app_name}}</title>{% endblock %}
 {% block scripts %}
-<script src="{{url_for('static', filename='js/compressor.min.js')}}" crossorigin=""></script>
+<script src="static/js/inicio.js" crossorigin=""></script>
+<script src="static/js/common.js" crossorigin=""></script>
+<script src="{{url_for('static', filename='js/leaflet.js')}}"></script>
 <script src="{{url_for('static', filename='js/QR.js')}}" crossorigin=""></script>
-<!-- <script src="{{url_for('static', filename='js/fotos.js')}}" crossorigin=""></script> -->
 {% endblock %}
+
 {% block scripts2 %}
-<!-- <link rel="stylesheet" href="{{url_for('static', filename='css/ensaios.css')}}">
-<link rel="stylesheet" href="{{url_for('static', filename='css/fotos.css')}}"> -->
+<link rel="stylesheet" href="static/css/inicio.css">
+<link rel="stylesheet" href="{{url_for('static', filename='css/leaflet.css')}}" crossorigin=""/>
 {% endblock %}
 
 {% block content %}
@@ -17,6 +19,8 @@
     {% include  "html/web/QR/panel_QR.html" %}
 </div> 
 {% endblock %}
+
 {% block menu %}{% include "html/web/menu.html" %}{% endblock %}
+
 {% block scripts3 %}{% endblock %}
 

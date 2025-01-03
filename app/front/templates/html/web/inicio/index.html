@@ -1,12 +1,14 @@
 {% extends "html/web/base.html" %}
+{% import 'html/web/common/macros.html' as macros %}
 
 {% block title %}<title>Inicio - {{g.app_name}}</title>{% endblock %}
 {% block scripts %}
 <script src="static/js/inicio.js" crossorigin=""></script>
 <script src="static/js/common.js" crossorigin=""></script>
-<script src="static/js/QR.js" crossorigin=""></script>
 <script src="{{url_for('static', filename='js/leaflet.js')}}"></script>
+<script src="{{url_for('static', filename='js/QR.js')}}" crossorigin=""></script>
 {% endblock %}
+
 {% block scripts2 %}
 <link rel="stylesheet" href="static/css/inicio.css">
 <link rel="stylesheet" href="{{url_for('static', filename='css/leaflet.css')}}" crossorigin=""/>
@@ -15,21 +17,23 @@
 {% block content %}
 <div id="contenido">
     <div class="primer_panel">
+        <div id="inicia_ver_QR_camara" class="button" onclick="ver_QR_camara()">Ver QR con camara</div>
+    </div>
+    <div class="segundo_panel">
         <div id="inicia_crea_QR_db" class="button" onclick="creaQRdb()">Novo QR</div>
         <div id="confirma_crea_QR_db" class="hidden">
             <div class="button acept" onclick="confirmaCreaQRdb()">Confirma creación novo QR</div>
             <div class="button cancel" onclick="cancelaCreaQRdb()">Cancela creación novo QR</div>
         </div>
     </div>
-    <div class="segundo_panel" >
-        <div id="panel_novo_QR_creado" class= "hidden">
-            <div>Novo QR creado</div>
-            <div id="panel_ver_QR_creado"></div> 
-        </div>
+    <div class="tercer_panel" >
+        <div id="panel_QR_creado" class="hidden"></div> 
     </div>
 </div>
 {% endblock %}
+
 {% block menu %}{% include "html/web/menu.html" %}{% endblock %}
+
 {% block scripts3 %}
     <!-- <script src="{{url_for('static', filename='js/mapa_base.js')}}"></script>
 	<script>{% include "js/mapa_visor.js" %}</script>

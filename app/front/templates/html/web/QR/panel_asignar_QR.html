@@ -1,7 +1,7 @@
 
 
 <div class="primer_panel">
-    <div id="inicia_asignar_QR" class="button" onclick="iniciaAsignaQRinv()">{% if not QR_asignado %}Asignar QR a elemento inventariado{% endif %}{% if QR_asignado %}Modificar asignación de QR a elemento inventariado{% endif %}</div>
+    <div id="inicia_asignar_QR" class="button" onclick="iniciaAsignaQRinv()">{% if not QR_asignado %}Asignar QR a elemento inventariado{% endif %}{% if QR_asignado %}Modificar asignación de QR{% endif %}</div>
     <div id="confirma_asignar_QR" class="hidden">
         <div id="panel_exterior_listado_elementos_sin_QR">Listaxe elementos asignar, cargar</div>
         <div id="boton_asignar_QR_inhabilitado" class="button">Confirma asignación de QR</div>
@@ -9,7 +9,8 @@
         <input id="elemento_seleccionado_asignar_QR" type="integer" name="id_elemento_en_tabla" placeholder=0 value=0 class="hidden">
         <input id="tabla_seleccionada_asignar_QR" type="integer" name="id_tabla" placeholder=0 value=0 class="hidden">
         <div id="boton_asignar_QR_cancelar" class="button cancel" onclick="cancelaAsignaQRinv()">Cancela asignación QR</div>
-        <div id="boton_desasignar_QR" class="button {% if not QR_asignado %} hidden {% endif %}" onclick="desAsignaQRinv('{{QR_db_info.tokenQR}}')">Eliminar asignación de QR</div>
+        <div id="boton_desasignar_QR" class="button {% if not QR_asignado %} hidden {% endif %}" onclick="desAsignaQRtoken('{{QR_db_info.tokenQR}}')">Eliminar asignación de QR</div>
     </div>
 </div>
+
 

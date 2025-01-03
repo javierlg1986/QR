@@ -43,6 +43,7 @@ def _crea_QR_db():
     log_db("QR", id_QR, "C", token_QR)
     return QR_db_info
 
+
 @app.route('/_crea_QR_imagen/<string:token_QR_request>', methods=['GET','POST'])
 @permiso
 def _crea_QR_imagen(token_QR_request):
@@ -133,11 +134,33 @@ def _asigna_QR_inv():
         'id_elem_en_tabla_asig': id_en_tabla_request,
         })
 
-@app.route('/_desasigna_QR_inv', methods=['POST'])
+@app.route('/_desasigna_QR_token', methods=['POST'])
 @permiso
-def _desasigna_QR_inv():
+def _desasigna_QR_token():
     token_QR_request = request.form.get('token_QR_request')
+    _desasigna_QR(token_QR_request)
 
+    return jsonify({
+        'token_QR': token_QR_request,
+        'tabla_asignada': None,
+        'id_elem_en_tabla_asig': None,
+        })
+
+@app.route('/_desasigna_QR_inventario', methods=['POST'])
+@permiso
+def _desasigna_QR_inventario():
+    id_tabla_request = request.form.get('id_tabla_request')
+    id_en_tabla_request = request.form.get('id_en_tabla_request')
+    QR_info = obtener_QR_asignado_a_elemento(id_tabla_request, id_en_tabla_request)
+    _desasigna_QR(QR_info['tokenQR'])
+
+    return jsonify({
+        'token_QR': QR_info['tokenQR'],
+        'tabla_asignada': None,
+        'id_elem_en_tabla_asig': None,
+        })
+
+def _desasigna_QR(token_QR_request):
     db = get_db()
     cur = db.cursor()
     cur.execute("""
@@ -146,7 +169,7 @@ def _desasigna_QR_inv():
         WHERE tokenQR = ?
         """, (token_QR_request,))
     db.commit()
-
+    
     # log_db("QR", token_QR_request, "U", tabla_request)
     # log_db("QR", token_QR_request, "U", id_en_tabla_request)
 
@@ -156,21 +179,6 @@ def _desasigna_QR_inv():
         'id_elem_en_tabla_asig': None,
         })
 
-@app.route('/_panel_elemento_asignado_a_QR', methods=['POST'])
-@permiso
-def _panel_elemento_asignado_a_QR():
-    token_QR_request = request.form.get('token_QR_request')
-    QR_db_info = QR_db_por_token(token_QR_request)
-    QR_asignado = False
-
-    if QR_db_info['id_elem_en_tabla_asig']!=None or QR_db_info['id_elem_en_tabla_asig']!=0 or QR_db_info['tabla_asignada']!=None or QR_db_info['tabla_asignada']!=0:
-        QR_asignado = True
-
-    return render_template(
-        "html/web/QR/panel_elemento_asignado_a_QR.html",
-        QR_db_info = QR_db_info,
-        QR_asignado = QR_asignado
-    )
 
 def QR_db_por_token(token_QR_request):
     token_QR = token_QR_request
@@ -251,4 +259,14 @@ def obtener_lista_tablas():
         """).fetchall())
     db.commit()
     return lista_tablas
+
+def obtener_QR_asignado_a_elemento(tabla_request, id_en_tabla_request):
+    db = get_db()
+    cur = db.cursor()
+    QR_asignado = sqliteRow2list_dict(cur.execute("""
+        Select * FROM QR
+        WHERE tabla_asignada = ? AND id_elem_en_tabla_asig = ?
+        """, (tabla_request, id_en_tabla_request)).fetchall())[0]
+    db.commit()
+    return QR_asignado
     

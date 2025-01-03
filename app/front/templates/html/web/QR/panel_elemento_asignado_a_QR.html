@@ -1,6 +1,10 @@
 <div id="elemento_asignado_a_QR">
-    {% if QR_asignado %}
-    <span class="title">El elemento asignado a este QR es el {{QR_db_info.id_elem_en_tabla_asig}} de la tabla {{QR_db_info.tabla_asignada}} </span>
+    {% if QR_db_info.id_elem_en_tabla_asig==none or QR_db_info.tabla_asignada==none %}
+    <span class="title">Este QR no tiene ningún elemento asignado</span>
+    {% else %}
+        {% if QR_asignado %}
+        <span class="title">El elemento asignado a este QR es el {{QR_db_info.id_elem_en_tabla_asig}} de la tabla {{QR_db_info.tabla_asignada}} </span>
+        {% endif %}
     {% endif %}
 </div>
 

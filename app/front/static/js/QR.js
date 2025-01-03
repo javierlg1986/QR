@@ -1,6 +1,11 @@
+function ver_QR_camara() {
+    console.log("ver_QR_camara");
+}
+
 function creaQRdb() {
     $(`#confirma_crea_QR_db`).removeClass("hidden");
     $(`#inicia_crea_QR_db`).addClass("hidden");
+    $(`#panel_QR`).addClass("hidden");
 }
 
 function confirmaCreaQRdb() {
@@ -9,8 +14,8 @@ function confirmaCreaQRdb() {
     }, function(data) {
     $(`#confirma_crea_QR_db`).addClass("hidden");
     $(`#inicia_crea_QR_db`).removeClass("hidden");
-    $(`#panel_novo_QR_creado`).removeClass("hidden");
-    $(`#panel_ver_QR_creado`).html(data);
+    $(`#panel_QR_creado`).removeClass("hidden");
+    $(`#panel_QR_creado`).html(data);
     }).fail(function(data) {
         errorMsg(data);
     });
@@ -32,8 +37,6 @@ function muestralistadoAsignaQRinv() {
     $.post('/_listado_elementos_sin_QR', {
         token: token
     }, function(data) {
-        $(`#confirma_asignar_QR`).removeClass("hidden");
-        $(`#inicia_asignar_QR`).addClass("hidden");
         $(`#panel_exterior_listado_elementos_sin_QR`).html(data);
     }).fail(function(data) {
         errorMsg(data);
@@ -65,17 +68,16 @@ function confirmaAsignaQRinv(token_QR_request) {
         preseleccionaElementoAsignarQR($(`#tabla_seleccionada_asignar_QR`).val(), $(`#elemento_seleccionado_asignar_QR`).val())
         $(`#panel_exterior_listado_elementos_sin_QR`).html();
         $(`#elemento_asignado_a_QR`).html();
+        $(`#inicia_asignar_QR`).html('Modificar asignación de QR');
         actualizaPanelElementoAsignadoQR(token_QR_request,$(`#tabla_seleccionada_asignar_QR`).val(), $(`#elemento_seleccionado_asignar_QR`).val())
     }).fail(function(data) {
         errorMsg(data);
     });
 }
 
-function actualizaPanelElementoAsignadoQR(token_QR_request,id_tabla_request, id_en_tabla_request) {
+function actualizaPanelElementoAsignadoQR(token_QR_request) {
     $.post('/_panel_elemento_asignado_a_QR', {
         token_QR_request:token_QR_request,
-        tabla_request: id_tabla_request,
-        id_en_tabla_request: id_en_tabla_request,
         token: token
     }, function(data) {
         $(`#elemento_asignado_a_QR`).html(data);
@@ -83,7 +85,6 @@ function actualizaPanelElementoAsignadoQR(token_QR_request,id_tabla_request, id_
         errorMsg(data);
     });
 }
-
 
 function cancelaAsignaQRinv() {
     $(`#confirma_asignar_QR`).addClass("hidden");
@@ -95,15 +96,20 @@ function cancelaAsignaQRinv() {
     $(`#boton_asignar_QR_habilitado`).addClass("hidden");
 }
 
-function desAsignaQRinv(token_QR_request) {
+function desAsignaQRtoken(token_QR_request) {
     if (!confirm("Está seguro de que desexa desasignar o QR?")) {
         return undefined
     }
-    $.post('/_desasigna_QR_inv', {
+    $.post('/_desasigna_QR_token', {
         token_QR_request: token_QR_request,
         token: token
     }, function(data) {
-        window.location.replace(`/QR/`+token_QR_request);
+        $(`#boton_desasignar_QR`).addClass("hidden");
+        $(`#boton_asignar_QR_inhabilitado`).removeClass("hidden");
+        $(`#boton_asignar_QR_habilitado`).addClass("hidden");
+        $(`#inicia_asignar_QR`).html('Asignar QR a elemento inventariado');
+        actualizaPanelElementoAsignadoQR(token_QR_request);
+        muestralistadoAsignaQRinv()
     }).fail(function(data) {
         errorMsg(data);
     });
